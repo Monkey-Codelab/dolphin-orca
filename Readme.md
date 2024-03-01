@@ -1,3 +1,15 @@
+# Dolphin - Orca
+A personal fork of Dolphin GameCube/Wii emulator for Android devices.
+
+The focus is to make a custom Dolphin build based on the latest codebase with following changes:
+* Implemented fractional scaling
+* Changing the debug colors of EFB and XFB (magenta and green) to black
+* Testing out experimental changes
+
+I want to learn more about software development. In the process, I may customize the app name, icon, or app ID. This is not to profit on the work of Dolphin developers, who I deeply respect, but solely for learning purposes and personal preference.
+
+**This fork is for personal use only and there will be no public builds available.**
+
 # Dolphin - A GameCube and Wii Emulator
 
 [Homepage](https://dolphin-emu.org/) | [Project Site](https://github.com/dolphin-emu/dolphin) | [Buildbot](https://dolphin.ci/) | [Forums](https://forums.dolphin-emu.org/) | [Wiki](https://wiki.dolphin-emu.org/) | [GitHub Wiki](https://github.com/dolphin-emu/dolphin/wiki) | [Issue Tracker](https://bugs.dolphin-emu.org/projects/emulator/issues) | [Coding Style](https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md) | [Transifex Page](https://app.transifex.com/delroth/dolphin-emu/dashboard/)
