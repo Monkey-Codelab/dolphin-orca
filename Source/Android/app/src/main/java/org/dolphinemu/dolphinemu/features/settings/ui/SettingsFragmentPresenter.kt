@@ -1250,6 +1250,19 @@ class SettingsFragmentPresenter(
                 R.array.aspectRatioValues
             )
         )
+      sl.add(
+        PercentSliderSetting(
+          context,
+          FloatSetting.GFX_DISPLAY_SCALE,
+          R.string.setting_display_scale,
+          0,
+          0f,
+          200f,
+          "%",
+          1f,
+          false
+        )
+      )
 
         sl.add(HeaderSetting(context, R.string.graphics_more_settings, 0))
         sl.add(

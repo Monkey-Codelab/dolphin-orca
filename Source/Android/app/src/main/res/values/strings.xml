@@ -447,6 +447,8 @@
     <string name="continue_anyway">Continue Anyway</string>
     <string name="more_settings">More Settings</string>
     <string name="advanced_settings">Advanced Settings</string>
+    <string name="setting_display_scale">Display Scale</string>
+
 
     <!-- Game Grid Screen-->
     <string name="platform_gamecube">GameCube Games</string>
@@ -726,12 +728,12 @@ It can efficiently compress both junk data and encrypted Wii data.
     <string name="shader_compilation_skip_drawing_description">Skip Drawing: Prevents shader compilation stuttering by not rendering waiting objects. Can work in scenarios where Ubershaders doesn\'t, at the cost of introducing visual glitches and broken effects. Not recommended, only use if the other options give poor results on your system.</string>
 
     <!-- Internal Resolution Preference -->
-    <string name="resolution_one_native">1x Native (640x528)</string>
-    <string name="resolution_two_native">2x Native (1280x1056) for 720p</string>
-    <string name="resolution_three_native">3x Native (1920x1584) for 1080p</string>
-    <string name="resolution_four_native">4x Native (2560x2112)</string>
-    <string name="resolution_five_native">5x Native (3200x2640)</string>
-    <string name="resolution_six_native">6x Native (3840x3168) for 4K</string>
+    <string name="resolution_one_native">0.8x Native (512x422)</string>
+    <string name="resolution_two_native">1x Native (640x528)</string>
+    <string name="resolution_three_native">1.5x Native (960x792)</string>
+    <string name="resolution_four_native">2x Native (1280x1056)</string>
+    <string name="resolution_five_native">2.5x Native (1600x1320)</string>
+    <string name="resolution_six_native">3x Native (1920x1584)</string>
 
     <!-- Multiple preference -->
     <string name="multiple_off">Off</string>

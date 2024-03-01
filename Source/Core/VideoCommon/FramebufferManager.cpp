@@ -192,12 +192,12 @@ unsigned int FramebufferManager::GetEFBScale() const
 
 int FramebufferManager::EFBToScaledX(int x) const
 {
-  return x * static_cast<int>(m_efb_scale);
+  return x * (m_efb_scale / 100.0f);
 }
 
 int FramebufferManager::EFBToScaledY(int y) const
 {
-  return y * static_cast<int>(m_efb_scale);
+  return y * (m_efb_scale / 100.0f);
 }
 
 float FramebufferManager::EFBToScaledXf(float x) const
@@ -217,12 +217,15 @@ std::tuple<u32, u32> FramebufferManager::CalculateTargetSize()
   else
     m_efb_scale = g_ActiveConfig.iEFBScale;
 
-  const u32 max_size = g_ActiveConfig.backend_info.MaxTextureSize;
-  if (max_size < EFB_WIDTH * m_efb_scale)
-    m_efb_scale = max_size / EFB_WIDTH;
+  if (m_efb_scale < 100)
+      m_efb_scale *= 100;
 
-  u32 new_efb_width = std::max(EFB_WIDTH * static_cast<int>(m_efb_scale), 1u);
-  u32 new_efb_height = std::max(EFB_HEIGHT * static_cast<int>(m_efb_scale), 1u);
+  const u32 max_size = g_ActiveConfig.backend_info.MaxTextureSize;
+  if (max_size < EFB_WIDTH * m_efb_scale / 100)
+    m_efb_scale = max_size * 100 / EFB_WIDTH;
+
+  u32 new_efb_width = std::max(static_cast<u32>(EFB_WIDTH * (m_efb_scale / 100.0f)), 1u);
+  u32 new_efb_height = std::max(static_cast<u32>(EFB_HEIGHT * (m_efb_scale / 100.0f)), 1u);
 
   return std::make_tuple(new_efb_width, new_efb_height);
 }

@@ -4,7 +4,6 @@
 #include "VideoCommon/Present.h"
 
 #include "Common/ChunkFile.h"
-#include "Core/Config/GraphicsSettings.h"
 #include "Core/HW/VideoInterface.h"
 #include "Core/Host.h"
 #include "Core/System.h"
@@ -366,38 +365,40 @@ float Presenter::CalculateDrawAspectRatio(bool allow_stretch) const
   return source_aspect_ratio;
 }
 
-void Presenter::AdjustRectanglesToFitBounds(MathUtil::Rectangle<int>* target_rect,
-                                            MathUtil::Rectangle<int>* source_rect, int fb_width,
-                                            int fb_height)
+void Presenter::AdjustRectanglesToFitBounds(MathUtil::Rectangle<int>& dst,
+                                           MathUtil::Rectangle<int>& src)
 {
-  const int orig_target_width = target_rect->GetWidth();
-  const int orig_target_height = target_rect->GetHeight();
-  const int orig_source_width = source_rect->GetWidth();
-  const int orig_source_height = source_rect->GetHeight();
-  if (target_rect->left < 0)
-  {
-    const int offset = -target_rect->left;
-    target_rect->left = 0;
-    source_rect->left += offset * orig_source_width / orig_target_width;
-  }
-  if (target_rect->right > fb_width)
-  {
-    const int offset = target_rect->right - fb_width;
-    target_rect->right -= offset;
-    source_rect->right -= offset * orig_source_width / orig_target_width;
-  }
-  if (target_rect->top < 0)
-  {
-    const int offset = -target_rect->top;
-    target_rect->top = 0;
-    source_rect->top += offset * orig_source_height / orig_target_height;
-  }
-  if (target_rect->bottom > fb_height)
-  {
-    const int offset = target_rect->bottom - fb_height;
-    target_rect->bottom -= offset;
-    source_rect->bottom -= offset * orig_source_height / orig_target_height;
-  }
+    float scale = g_ActiveConfig.fDisplayScale;
+
+    int delta_x = std::lround(dst.GetWidth() * (scale - 1.0f) / 4.0f);
+    int delta_y = std::lround(dst.GetHeight() * (scale - 1.0f) / 4.0f);
+
+    dst.left = dst.left - delta_x;
+    dst.top = dst.top - delta_y;
+    dst.right = dst.right + delta_x;
+    dst.bottom = dst.bottom + delta_y;
+
+    if (dst.GetWidth() > m_backbuffer_width)
+    {
+        delta_x =
+                std::lround(src.GetWidth() * (1.0f - m_backbuffer_width / (float)dst.GetWidth()) / 2.0f);
+        src.left += delta_x;
+        src.right -= delta_x;
+
+        dst.left = 0;
+        dst.right = m_backbuffer_width;
+    }
+
+    if (dst.GetHeight() > m_backbuffer_height)
+    {
+        delta_y =
+                std::lround(src.GetHeight() * (1.0f - m_backbuffer_height / (float)dst.GetHeight()) / 2.0f);
+        src.top += delta_y;
+        src.bottom -= delta_y;
+
+        dst.top = 0;
+        dst.bottom = m_backbuffer_height;
+    }
 }
 
 void Presenter::ReleaseXFBContentLock()
@@ -428,26 +429,10 @@ void* Presenter::GetNewSurfaceHandle()
 
 u32 Presenter::AutoIntegralScale() const
 {
-  // Take the source resolution (XFB) and stretch it on the target aspect ratio.
-  // If the target resolution is larger (on either x or y), we scale the source
-  // by a integer multiplier until it won't have to be scaled up anymore.
-  u32 source_width = m_last_xfb_width;
-  u32 source_height = m_last_xfb_height;
-  const u32 target_width = m_target_rectangle.GetWidth();
-  const u32 target_height = m_target_rectangle.GetHeight();
-  const float source_aspect_ratio = (float)source_width / source_height;
-  const float target_aspect_ratio = (float)target_width / target_height;
-  if (source_aspect_ratio >= target_aspect_ratio)
-    source_width = std::round(source_height * target_aspect_ratio);
-  else
-    source_height = std::round(source_width / target_aspect_ratio);
-  const u32 width_scale =
-      source_width > 0 ? ((target_width + (source_width - 1)) / source_width) : 1;
-  const u32 height_scale =
-      source_height > 0 ? ((target_height + (source_height - 1)) / source_height) : 1;
-  // Limit to the max to avoid creating textures larger than their max supported resolution.
-  return std::min(std::max(width_scale, height_scale),
-                  static_cast<u32>(Config::Get(Config::GFX_MAX_EFB_SCALE)));
+  // Calculate a scale based on the window size
+  u32 width = EFB_WIDTH * m_target_rectangle.GetWidth() * 100 / m_last_xfb_width;
+  u32 height = EFB_HEIGHT * m_target_rectangle.GetHeight() * 100 / m_last_xfb_height;
+  return std::max((width - 1) / EFB_WIDTH + 1, (height - 1) / EFB_HEIGHT + 1);
 }
 
 void Presenter::SetSuggestedWindowSize(int width, int height)
@@ -756,8 +741,7 @@ void Presenter::Present()
     // Adjust the source rectangle instead of using an oversized viewport to render the XFB.
     auto render_target_rc = GetTargetRectangle();
     auto render_source_rc = m_xfb_rect;
-    AdjustRectanglesToFitBounds(&render_target_rc, &render_source_rc, m_backbuffer_width,
-                                m_backbuffer_height);
+    AdjustRectanglesToFitBounds(render_target_rc, render_source_rc);
     RenderXFBToScreen(render_target_rc, m_xfb_entry->texture.get(), render_source_rc);
   }
 

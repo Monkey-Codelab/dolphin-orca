@@ -269,12 +269,12 @@
         <item>@string/resolution_six_native</item>
     </string-array>
     <integer-array name="internalResolutionValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
+        <item>80</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
     </integer-array>
 
     <!-- FSAA Preference -->
